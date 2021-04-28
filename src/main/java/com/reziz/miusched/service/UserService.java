@@ -1,7 +1,7 @@
 package com.reziz.miusched.service;
 
 
-import com.reziz.miusched.model.User;
+import com.reziz.miusched.model.UserModel;
 import com.reziz.miusched.model.request.UserCreateRequest;
 import com.reziz.miusched.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,18 +18,19 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public User readUserByUsername (String username) {
+    public UserModel readUserByUsername (String username) {
         return userRepository.findByUsername(username).orElseThrow(EntityNotFoundException::new);
     }
 
     public void createUser(UserCreateRequest userCreateRequest) {
-        User user = new User();
-        Optional<User> byUsername = userRepository.findByUsername(userCreateRequest.getUsername());
+        UserModel userModel = new UserModel();
+        Optional<UserModel> byUsername = userRepository.findByUsername(userCreateRequest.getUsername());
         if (byUsername.isPresent()) {
-            throw new RuntimeException("User already registered. Please use different username.");
+            throw new RuntimeException("UserModel already registered. Please use different username.");
         }
-        user.setUsername(userCreateRequest.getUsername());
-        user.setPassword(passwordEncoder.encode(userCreateRequest.getPassword()));
-        userRepository.save(user);
+        userModel.setUsername(userCreateRequest.getUsername());
+        userModel.setRole(userCreateRequest.getRole());
+        userModel.setPassword(passwordEncoder.encode(userCreateRequest.getPassword()));
+        userRepository.save(userModel);
     }
 }
