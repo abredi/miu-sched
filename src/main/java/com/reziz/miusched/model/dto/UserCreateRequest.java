@@ -1,4 +1,4 @@
-package com.reziz.miusched.model.request;
+package com.reziz.miusched.model.dto;
 
 import lombok.Data;
 

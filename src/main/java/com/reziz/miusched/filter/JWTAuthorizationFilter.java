@@ -1,5 +1,6 @@
 package com.reziz.miusched.filter;
 
+
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
@@ -17,7 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
@@ -43,13 +43,12 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
         String token = request.getHeader(AuthenticationConfigConstants.HEADER_STRING);
         if (token != null) {
-            // parse the token.
             DecodedJWT verify = JWT.require(Algorithm.HMAC512(AuthenticationConfigConstants.SECRET.getBytes()))
                     .build()
                     .verify(token.replace(AuthenticationConfigConstants.TOKEN_PREFIX, ""));
 
             String username = verify.getSubject();
-            var role = verify.getClaim("role").asString();
+            String role = verify.getClaim("role").asString();
 
             if (username != null) {
                 return new UsernamePasswordAuthenticationToken(username, null, getAuthorities(role));

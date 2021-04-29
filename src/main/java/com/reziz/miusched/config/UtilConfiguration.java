@@ -1,4 +1,4 @@
-package com.reziz.miusched.conf;
+package com.reziz.miusched.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

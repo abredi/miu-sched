@@ -1,7 +1,8 @@
-package com.reziz.miusched.conf;
+package com.reziz.miusched.config;
 
 import com.reziz.miusched.filter.AuthenticationConfigConstants;
-import com.reziz.miusched.filter.*;
+import com.reziz.miusched.filter.JWTAuthenticationFilter;
+import com.reziz.miusched.filter.JWTAuthorizationFilter;
 import com.reziz.miusched.service.AuthenticationUserDetailService;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -23,16 +24,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable().authorizeRequests()
                 .antMatchers(HttpMethod.POST, AuthenticationConfigConstants.SIGN_UP_URL).permitAll()
-                //ROLE BASED AUTHENTICATION START
-                .antMatchers("/api/admin/**").hasAnyAuthority("USER", "ADMIN")
-                .antMatchers("/api/stu/**").hasAnyAuthority("ADMIN")
-                .antMatchers("/api/uni/**").hasAnyAuthority("USER")
-                //ROLE BASED AUTHENTICATION END
+                .antMatchers("/api/uni/**").hasAnyAuthority("STU", "ADMIN")
+                .antMatchers("/api/stu/**").hasAnyAuthority("STU")
+                .antMatchers("/api/admin/**").hasAnyAuthority("ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .addFilter(new JWTAuthenticationFilter(authenticationManager()))
                 .addFilter(new JWTAuthorizationFilter(authenticationManager()))
-                // this disables session creation on Spring Security
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 
