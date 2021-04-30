@@ -9,6 +9,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import org.springframework.security.core.userdetails.User;
+
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -18,13 +20,13 @@ public class AuthenticationUserDetailService implements UserDetailsService {
 
     private final UserService userService;
 
-    @Override public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserModel user = userService.readUserByUsername(username);
         if (user == null) {
             throw new UsernameNotFoundException(username);
         }
-        return new org.springframework.security.core.userdetails
-        .User(user.getUsername(), user.getPassword(), getAuthorities(user.getRole()));
+        return new User(user.getUsername(), user.getPassword(), getAuthorities(user.getRole()));
     }
 
     private Collection<? extends GrantedAuthority> getAuthorities(String role) {
