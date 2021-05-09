@@ -31,6 +31,13 @@ public class HelloResource {
         return ResponseEntity.ok(helloRepository.findAll());
     }
 
+    @GetMapping("{id}")
+    public ResponseEntity<Hello> detail(@PathVariable Long id) {
+        Optional<Hello> hello = helloRepository.findById(id);
+        return hello.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+
     @GetMapping("/{id}")
     public ResponseEntity<Hello> get(@PathVariable Long id) {
         Optional<Hello> h = helloRepository.findById(id);
