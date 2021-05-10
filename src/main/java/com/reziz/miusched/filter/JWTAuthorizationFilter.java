@@ -47,8 +47,8 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
                     .build()
                     .verify(token.replace(AuthenticationConfigConstants.TOKEN_PREFIX, ""));
 
-            String username = verify.getSubject();
-            String role = verify.getClaim("role").asString();
+            var username = verify.getSubject();
+            var role = verify.getClaim("role").asString();
 
             if (username != null) {
                 return new UsernamePasswordAuthenticationToken(username, null, getAuthorities(role));

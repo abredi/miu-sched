@@ -5,6 +5,8 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.reziz.miusched.model.UserModel;
+import com.reziz.miusched.service.NoRecordFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -28,10 +30,12 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     private final AuthenticationManager authenticationManager;
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         try {
-            UserModel cred = new ObjectMapper()
+            UserModel cred = objectMapper
                     .readValue(request.getInputStream(), UserModel.class);
 
             return authenticationManager.authenticate(
@@ -41,7 +45,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                             new ArrayList<>())
             );
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new NoRecordFoundException();
         }
     }
 
@@ -52,7 +56,12 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .withExpiresAt(new Date(System.currentTimeMillis() + AuthenticationConfigConstants.EXPIRATION_TIME))
                 .sign(Algorithm.HMAC512(AuthenticationConfigConstants.SECRET.getBytes()));
 
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
         response.addHeader(AuthenticationConfigConstants.HEADER_STRING,
                 AuthenticationConfigConstants.TOKEN_PREFIX + token);
+
+        response.getWriter().write("[" + objectMapper.writeValueAsString(auth.getPrincipal())
+                + ", {\"token\": \"" + AuthenticationConfigConstants.TOKEN_PREFIX + token + "\"}]");
     }
 }

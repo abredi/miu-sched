@@ -19,7 +19,7 @@ public class UserService {
     private final BCryptPasswordEncoder passwordEncoder;
 
     public UserModel readUserByUsername(String username) {
-        return userRepository.findByUsername(username).orElseThrow(EntityNotFoundException::new);
+        return userRepository.findByUsername(username).orElse(null);
     }
 
     public void createUser(UserCreateRequest userCreateRequest) {
